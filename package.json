@@ -1,0 +1,51 @@
+{
+  "name": "@yawlabs/lemonsqueezy-webhook-sink",
+  "version": "0.1.0",
+  "description": "Durable webhook receiver for LemonSqueezy — verifies signatures, deduplicates events, and persists them for replay and reconciliation",
+  "license": "MIT",
+  "author": "YawLabs <contact@yaw.sh>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YawLabs/lemonsqueezy-webhook-sink.git"
+  },
+  "keywords": [
+    "lemonsqueezy",
+    "webhook",
+    "receiver",
+    "reconciliation",
+    "payments"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "lemonsqueezy-webhook-sink": "dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "schema.sql"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "npm run build && node --test dist/**/*.test.js",
+    "test:ci": "npm run test",
+    "lint": "biome check src/",
+    "lint:fix": "biome check --write src/",
+    "prepublishOnly": "npm run build && node --test dist/**/*.test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "hono": "^4.6.0",
+    "@hono/node-server": "^1.13.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^22.15.2",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
