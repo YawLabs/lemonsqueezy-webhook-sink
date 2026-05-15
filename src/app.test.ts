@@ -152,6 +152,52 @@ describe("HTTP app", () => {
     assert.equal(r.status, 400);
   });
 
+  it("GET /events rejects non-numeric since with 400", async () => {
+    const r = await req("/events?since=abc", { headers: { authorization: `Bearer ${ADMIN}` } });
+    assert.equal(r.status, 400);
+    const j = (await r.json()) as { error: string };
+    assert.match(j.error, /since/);
+  });
+
+  it("GET /events rejects negative since with 400", async () => {
+    const r = await req("/events?since=-1", { headers: { authorization: `Bearer ${ADMIN}` } });
+    assert.equal(r.status, 400);
+  });
+
+  it("GET /events rejects non-numeric limit with 400", async () => {
+    const r = await req("/events?limit=abc", { headers: { authorization: `Bearer ${ADMIN}` } });
+    assert.equal(r.status, 400);
+    const j = (await r.json()) as { error: string };
+    assert.match(j.error, /limit/);
+  });
+
+  it("GET /events rejects zero limit with 400", async () => {
+    const r = await req("/events?limit=0", { headers: { authorization: `Bearer ${ADMIN}` } });
+    assert.equal(r.status, 400);
+  });
+
+  it("POST /webhook rejects oversized body with 413", async () => {
+    const huge = "x".repeat(1024 * 1024 + 10);
+    const r = await req("/webhook", {
+      method: "POST",
+      headers: { "x-signature": sign(huge), "content-length": String(huge.length) },
+      body: huge,
+    });
+    assert.equal(r.status, 413);
+    assert.equal(store.stats().total, 0);
+  });
+
+  it("GET /healthz returns 503 when DB is closed", async () => {
+    store.close();
+    const r = await req("/healthz");
+    assert.equal(r.status, 503);
+    const j = (await r.json()) as { ok: boolean };
+    assert.equal(j.ok, false);
+    // Re-open so afterEach close() doesn't double-close
+    store = new EventStore(dbPath);
+    app = createApp({ store, signingSecret: SECRET, adminToken: ADMIN });
+  });
+
   it("GET /stats returns totals", async () => {
     const body = payload();
     await req("/webhook", {
@@ -166,16 +212,26 @@ describe("HTTP app", () => {
     assert.equal(s.unprocessed, 1);
   });
 
-  it("admin endpoints return 404 when token is unset", async () => {
+  it("admin endpoints return 404 when token is unset, with no leaking body", async () => {
     const noAuthApp = createApp({ store, signingSecret: SECRET, adminToken: undefined });
     const r = await noAuthApp.fetch(
       new Request("http://test/events", { headers: { authorization: "Bearer anything" } }),
     );
     assert.equal(r.status, 404);
+    const text = await r.text();
+    assert.doesNotMatch(text, /admin/i, "404 body must not reveal admin endpoint existence");
+    assert.doesNotMatch(text, /disabled/i);
   });
 
   it("admin endpoints reject wrong bearer token with 401", async () => {
     const r = await req("/stats", { headers: { authorization: "Bearer wrong" } });
+    assert.equal(r.status, 401);
+  });
+
+  it("admin endpoints reject token with same length but wrong bytes via timing-safe compare", async () => {
+    // Same length as `Bearer ${ADMIN}` -> ensures we hit the timingSafeEqual branch, not the length branch
+    const sameLength = `Bearer ${"x".repeat(ADMIN.length)}`;
+    const r = await req("/stats", { headers: { authorization: sameLength } });
     assert.equal(r.status, 401);
   });
 });

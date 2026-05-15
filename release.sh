@@ -108,11 +108,12 @@ else
   if git tag -l "v${VERSION}" | grep -q "v${VERSION}"; then
     info "Tag v${VERSION} already exists"
   else
-    git tag "v${VERSION}"
+    # Annotated tag (not lightweight) so `git push --follow-tags` will propagate it.
+    git tag -a "v${VERSION}" -m "v${VERSION}"
     info "Tag v${VERSION} created"
   fi
 
-  git push origin main --tags
+  git push origin main --follow-tags
   info "Pushed to origin"
 fi
 

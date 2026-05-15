@@ -85,4 +85,15 @@ describe("EventStore", () => {
     store.insert(base({ event_key: "b", received_at: 700 }));
     assert.equal(store.stats().lastReceivedAt, 700);
   });
+
+  it("ping succeeds on a healthy DB", () => {
+    assert.doesNotThrow(() => store.ping());
+  });
+
+  it("ping throws on a closed DB", () => {
+    store.close();
+    assert.throws(() => store.ping());
+    // Reopen so afterEach close() doesn't double-close
+    store = new EventStore(dbPath);
+  });
 });
