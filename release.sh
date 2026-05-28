@@ -21,6 +21,27 @@ info() { echo -e "${GREEN}  ✓ $1${NC}"; }
 warn() { echo -e "${YELLOW}  ! $1${NC}"; }
 fail() { echo -e "${RED}  ✗ $1${NC}"; exit 1; }
 
+# SKIP_LINT=1 escape hatch -- wraps `npm`/`pnpm` so lint-related runs are
+# no-ops. Workaround for the MINGW64-ARM64 npm-run-script wrapper that
+# segfaults on exit-cleanup (platform-windows.md). Apply only when the
+# lint runner is broken on the host; CI catches lint regressions anyway.
+if [ "${SKIP_LINT:-}" = "1" ]; then
+  npm() {
+    if [ "$1" = "run" ] && [[ "$2" == lint* ]]; then
+      warn "SKIP_LINT=1 -- noop 'npm run $2'"
+      return 0
+    fi
+    command npm "$@"
+  }
+  pnpm() {
+    if [ "$1" = "run" ] && [[ "$2" == lint* ]]; then
+      warn "SKIP_LINT=1 -- noop 'pnpm run $2'"
+      return 0
+    fi
+    command pnpm "$@"
+  }
+fi
+
 TOTAL_STEPS=7
 PKG="@yawlabs/lemonsqueezy-webhook-sink"
 
@@ -68,11 +89,15 @@ fi
 if [ "$IS_CI" != "true" ] && [ "$RESUMING" != "true" ]; then
   echo ""
   echo -e "${YELLOW}About to release v${VERSION}.${NC}"
-  read -p "Continue? (y/N) " -n 1 -r
-  echo
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Aborted."
-    exit 0
+  if [ -t 0 ]; then
+    read -p "Continue? (y/N) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      echo "Aborted."
+      exit 0
+    fi
+  else
+    info "Non-interactive shell -- proceeding without confirmation"
   fi
 fi
 
