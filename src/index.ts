@@ -2,21 +2,8 @@
 
 import { serve } from "@hono/node-server";
 import { createApp } from "./app.js";
+import { parsePort, requireEnv } from "./env.js";
 import { EventStore } from "./store.js";
-
-function requireEnv(name: string): string {
-  const v = process.env[name];
-  if (!v || v.trim() === "") throw new Error(`${name} environment variable is required`);
-  return v;
-}
-
-function parsePort(raw: string): number {
-  const n = Number(raw);
-  if (!Number.isInteger(n) || n < 1 || n > 65535) {
-    throw new Error(`PORT must be an integer in [1, 65535], got: ${JSON.stringify(raw)}`);
-  }
-  return n;
-}
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;
 
