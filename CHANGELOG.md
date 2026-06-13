@@ -2,6 +2,18 @@
 
 All notable changes to `@yawlabs/lemonsqueezy-webhook-sink` are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.6] -- 2026-06-13
+
+Dependency maintenance. The published change is the `@hono/node-server` major bump; the server was boot-tested under it.
+
+### Changed
+
+- **`@hono/node-server` bumped 1.19.14 -> 2.0.4 (major).** This is the HTTP adapter `src/index.ts` boots via `serve()`. Verified the server starts and `GET /healthz` returns 200 under 2.x. `hono` (4.12.25) and `better-sqlite3` (12.10.0) also moved up by patch; dev tooling (`@biomejs/biome` 2.5.0, `@types/node` 25.9.3) by minor.
+
+### Fixed
+
+- **`.gitignore` now ignores SQLite WAL sidecars** (`*.db-shm`, `*.db-wal`). The store runs in WAL mode, so running the app left two untracked files the prior `*.db` / `*.db-journal` patterns missed.
+
 ## [0.1.5] -- 2026-06-13
 
 Maintenance. The only change to the published package is the Node engine floor; the rest is repo hygiene.
@@ -100,6 +112,7 @@ Initial release.
 - Release pipeline (`.github/workflows/release.yml` + `release.sh`) -- tag `vX.Y.Z` to publish via the org-level `NPM_TOKEN` secret.
 - CI across Node 20 and 22. Biome lint, TypeScript strict, `node --test`.
 
+[0.1.6]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.6
 [0.1.5]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.5
 [0.1.4]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.4
 [0.1.3]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.3
