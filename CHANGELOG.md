@@ -2,6 +2,19 @@
 
 All notable changes to `@yawlabs/lemonsqueezy-webhook-sink` are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.7] -- 2026-06-13
+
+Maintenance only -- no runtime or API changes; internal config and doc cleanups.
+
+### Changed
+
+- **`tsconfig.json` `module`/`moduleResolution`: Node16 -> NodeNext** to match the `>=22` engine floor. Emitted output is unchanged -- the code already uses explicit `.js` import extensions.
+
+### Fixed
+
+- **`biome.json` `$schema`** bumped to 2.5.0 to match the installed Biome (the 2.x migration had pinned 2.4.13).
+- **`schema.sql` comment** aligned: the inline `event_key` note now matches the actual fallback hash (`event_name + data.type + data.id + data.attributes.created_at`), consistent with the file header and `handler.ts`.
+
 ## [0.1.6] -- 2026-06-13
 
 Dependency maintenance. The published change is the `@hono/node-server` major bump; the server was boot-tested under it.
@@ -112,6 +125,7 @@ Initial release.
 - Release pipeline (`.github/workflows/release.yml` + `release.sh`) -- tag `vX.Y.Z` to publish via the org-level `NPM_TOKEN` secret.
 - CI across Node 20 and 22. Biome lint, TypeScript strict, `node --test`.
 
+[0.1.7]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.7
 [0.1.6]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.6
 [0.1.5]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.5
 [0.1.4]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.4
