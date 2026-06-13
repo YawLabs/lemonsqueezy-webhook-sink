@@ -1,0 +1,3 @@
+# Normalize line endings: store text as LF in the repo and check out as LF,
+# overriding core.autocrlf=true so tooling (biome) sees consistent endings.
+* text=auto eol=lf
