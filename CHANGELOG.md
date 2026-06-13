@@ -2,6 +2,44 @@
 
 All notable changes to `@yawlabs/lemonsqueezy-webhook-sink` are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.4] -- 2026-06-13
+
+Dependency maintenance. No changes to the runtime HTTP contract or behavior -- every bump type-checks clean and passes the full test suite.
+
+### Changed
+
+- **Runtime dependencies bumped:** `hono` 4.12.14 -> 4.12.23 (patch) and `better-sqlite3` 11.10.0 -> 12.9.0 (major; API-compatible for the prepared-statement and `pragma`/`exec` surface this package uses).
+- **Dev/build toolchain bumped:** `typescript` 5.9.3 -> 6.0.3, `@types/node` 22.19.17 -> 25.6.0, and `@biomejs/biome` 1.9.4 -> 2.4.13. The Biome 2.x bump required migrating `biome.json` to the 2.x schema (top-level `organizeImports` moved under `assist.actions.source`).
+
+### Fixed
+
+- **Line endings normalized via `.gitattributes`** (`* text=auto eol=lf`). Files now check out as LF regardless of `core.autocrlf`; previously Biome (which expects LF) flagged formatting on files Git had rewritten with CRLF on Windows checkouts.
+
+## [0.1.3] -- 2026-06-02
+
+Testability refactor plus release-script hardening. No runtime behavior change.
+
+### Added
+
+- **Unit tests for the boot-time env validators** (`parsePort`, `requireEnv`) -- port range/format rejection and required/blank-value handling.
+
+### Changed
+
+- **`parsePort` and `requireEnv` extracted into `src/env.ts`** from `index.ts`, so they can be unit-tested without triggering `index.ts`'s import-time side effects (reading env, opening the DB, starting the HTTP server, registering signal handlers).
+- **`release.sh`: `SKIP_LINT=1` escape hatch** for the MINGW64-ARM64 `npm run` segfault, and the confirmation prompt is now TTY-gated so non-interactive runs proceed instead of hanging.
+
+### Fixed
+
+- **`release.sh` tag-drift guard.** The script refuses to push if origin already has the version tag pointing at a different commit (rewound tag / parallel-release race), rather than letting `git push --follow-tags` silently skip the tag and link a GitHub release to a stale commit. The guard compares dereferenced tag-object SHAs, so resuming an interrupted release no longer false-aborts.
+
+## [0.1.2] -- 2026-05-28
+
+Release-pipeline change: moved from GitHub Actions to a local-only release flow. No changes to the published package.
+
+### Changed
+
+- **Removed all GitHub Actions workflows** (`ci.yml`, `release.yml`, and unused siblings). Releases now run entirely from the workstation via `release.sh` -- lint, build, test, version bump, tag, npm publish, and GitHub release creation -- authenticated with a local npm automation token. CI-on-tag-push is no longer part of this repo's flow.
+
 ## [0.1.1] -- 2026-05-15
 
 Hardening pass before active use. No breaking changes to the happy-path HTTP contract; behavior changes are limited to error responses on previously-loose input.
@@ -50,5 +88,8 @@ Initial release.
 - Release pipeline (`.github/workflows/release.yml` + `release.sh`) -- tag `vX.Y.Z` to publish via the org-level `NPM_TOKEN` secret.
 - CI across Node 20 and 22. Biome lint, TypeScript strict, `node --test`.
 
+[0.1.4]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.4
+[0.1.3]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.3
+[0.1.2]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.2
 [0.1.1]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.1
 [0.1.0]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.0
