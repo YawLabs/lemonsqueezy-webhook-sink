@@ -2,6 +2,18 @@
 
 All notable changes to `@yawlabs/lemonsqueezy-webhook-sink` are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.5] -- 2026-06-13
+
+Maintenance. The only change to the published package is the Node engine floor; the rest is repo hygiene.
+
+### Changed
+
+- **`engines.node` raised from `>=20` to `>=22`.** Node 20 reached end-of-life, so the supported floor moves up to the current active LTS.
+
+### Removed
+
+- Stale leftovers from the 0.1.2 move to a local-only release flow (none are in the published package): the orphaned Dependabot `github-actions` updater, the dead CI-handoff branch in `release.sh`, and the unused `test:ci` npm script.
+
 ## [0.1.4] -- 2026-06-13
 
 Dependency maintenance. No changes to the runtime HTTP contract or behavior -- every bump type-checks clean and passes the full test suite.
@@ -88,6 +100,7 @@ Initial release.
 - Release pipeline (`.github/workflows/release.yml` + `release.sh`) -- tag `vX.Y.Z` to publish via the org-level `NPM_TOKEN` secret.
 - CI across Node 20 and 22. Biome lint, TypeScript strict, `node --test`.
 
+[0.1.5]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.5
 [0.1.4]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.4
 [0.1.3]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.3
 [0.1.2]: https://github.com/YawLabs/lemonsqueezy-webhook-sink/releases/tag/v0.1.2
