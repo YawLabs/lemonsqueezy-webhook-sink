@@ -9,9 +9,9 @@ CREATE TABLE IF NOT EXISTS events (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
 
   -- LemonSqueezy event identity. `event_key` is the dedupe key: either the
-  -- `meta.custom_data.event_id` if the sender provides one, or a hash of
-  -- (event_name + timestamp + resource_id) as a fallback. Unique so duplicate
-  -- deliveries become a no-op insert.
+  -- `meta.custom_data.event_id` if the sender provides one, or a SHA-256 hash
+  -- of `event_name + data.type + data.id + data.attributes.created_at` as a
+  -- fallback. Unique so duplicate deliveries become a no-op insert.
   event_key   TEXT NOT NULL UNIQUE,
   event_name  TEXT NOT NULL,
   resource_id TEXT,
