@@ -35,10 +35,25 @@ Optional:
 | Method | Path | Auth | Purpose |
 | --- | --- | --- | --- |
 | `POST` | `/webhook` | HMAC | Receive a LemonSqueezy webhook. Returns 200 for both new and duplicate events. |
-| `GET` | `/healthz` | none | Liveness check. |
+| `GET` | `/healthz` | none | Liveness check. 200 when the DB is reachable, 503 otherwise. |
 | `GET` | `/events?since=<ts>&type=<name>&limit=<n>` | `WEBHOOK_SINK_ADMIN_TOKEN` | Page events in order of `received_at`. Use `since=<last-seen-ts>` to checkpoint. |
 | `POST` | `/events/:id/processed` | `WEBHOOK_SINK_ADMIN_TOKEN` | Mark an event consumed. |
 | `GET` | `/stats` | `WEBHOOK_SINK_ADMIN_TOKEN` | Total events, unprocessed count, last-received timestamp. |
+
+### Response codes for `POST /webhook`
+
+| Status | When |
+| --- | --- |
+| `200` | Valid signature and parseable payload (new or duplicate event). |
+| `400` | Signature valid, but body is not JSON or `meta.event_name` is missing. |
+| `401` | Missing or invalid `X-Signature`. |
+| `413` | Body exceeds 1 MB. |
+
+When `WEBHOOK_SINK_ADMIN_TOKEN` is unset, the admin endpoints (`/events`, `/events/:id/processed`, `/stats`) respond `404` indistinguishably from any unknown route -- they do not reveal that an admin surface exists.
+
+### Using with `@yawlabs/lemonsqueezy-mcp`
+
+The [LemonSqueezy MCP server](https://github.com/YawLabs/lemonsqueezy-mcp) exposes `ls_sink_events_list`, `ls_sink_event_mark_processed`, and `ls_sink_stats` tools that bridge to this sink over HTTP. Point the MCP server at this sink by setting `LEMONSQUEEZY_SINK_URL` and `LEMONSQUEEZY_SINK_ADMIN_TOKEN` in its environment; agents can then query "what events have actually fired" through the same MCP surface they use for LS API calls.
 
 ## Deduplication
 

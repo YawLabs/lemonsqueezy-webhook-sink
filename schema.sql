@@ -1,6 +1,8 @@
--- Webhook event store. One row per received webhook, deduplicated by LemonSqueezy's event_name + custom_data.event_id when present.
--- The payload is stored as raw JSON so the HMAC signature can be re-verified
--- against the original bytes if needed.
+-- Webhook event store. One row per received webhook, deduplicated by `event_key`:
+-- either `meta.custom_data.event_id` when the sender supplies one, or a SHA-256
+-- hash of `event_name + data.type + data.id + data.attributes.created_at` as a
+-- stable fallback. The payload is stored as raw JSON so the HMAC signature can
+-- be re-verified against the original bytes if needed.
 
 CREATE TABLE IF NOT EXISTS events (
   -- Surrogate primary key; external consumers should prefer `event_key`.
