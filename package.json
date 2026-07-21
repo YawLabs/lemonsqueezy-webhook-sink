@@ -1,6 +1,6 @@
 {
   "name": "@yawlabs/lemonsqueezy-webhook-sink",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Durable webhook receiver for LemonSqueezy — verifies signatures, deduplicates events, and persists them for replay and reconciliation",
   "license": "MIT",
   "author": "YawLabs <contact@yaw.sh>",
