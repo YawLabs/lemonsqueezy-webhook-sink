@@ -8,3 +8,7 @@ dist/
 *.db-wal
 .env
 .claude
+
+# npm auth token -- never commit (a project-local .npmrc can be
+# created by tooling and would carry a live automation token)
+.npmrc
