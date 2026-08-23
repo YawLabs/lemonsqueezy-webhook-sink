@@ -2,6 +2,8 @@
 
 All notable changes to `@yawlabs/lemonsqueezy-webhook-sink` are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
 ## [0.1.9] -- 2026-08-23
 
 ### Fixed
