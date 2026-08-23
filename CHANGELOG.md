@@ -2,6 +2,11 @@
 
 All notable changes to `@yawlabs/lemonsqueezy-webhook-sink` are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.9] -- 2026-08-23
+
+### Fixed
+- **The test suite is bounded by `--test-timeout`, so a hang cannot wedge a release.** `node:test` has no default per-test timeout, so a test awaiting an event that never arrives runs forever -- and `npm test` runs unattended inside `release.sh`, which turns a wedged release rather than a failed one. 300000ms is deliberately generous (files measure ~7.5s worst case) and converts an infinite hang into a reported failure. Note the flag is per-FILE until Node 24, and requires Node >= 20.11.0.
+
 ## [0.1.7] -- 2026-06-13
 
 Maintenance only -- no runtime or API changes; internal config and doc cleanups.
