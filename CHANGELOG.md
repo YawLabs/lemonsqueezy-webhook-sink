@@ -7,6 +7,24 @@ All notable changes to `@yawlabs/lemonsqueezy-webhook-sink` are documented here.
 ### Fixed
 - **The test suite is bounded by `--test-timeout`, so a hang cannot wedge a release.** `node:test` has no default per-test timeout, so a test awaiting an event that never arrives runs forever -- and `npm test` runs unattended inside `release.sh`, which turns a wedged release rather than a failed one. 300000ms is deliberately generous (files measure ~7.5s worst case) and converts an infinite hang into a reported failure. Note the flag is per-FILE until Node 24, and requires Node >= 20.11.0.
 
+## [0.1.8] -- 2026-07-21
+
+Maintenance only -- `src/` is untouched across the range, so the published package (`files: ["dist/", "schema.sql"]`) carries no behavior change. Runtime dependency ranges are unchanged too; only the lockfile and one dev-dependency floor moved.
+
+### Added
+
+- **`CODEOWNERS` at the repo root (`* @jeffyaw`)** for SOC 2 compliance. The wildcard rule gives every path a named owner, so review requests auto-assign and an auditor has one file to point at for "who approves changes here" instead of having to reconstruct it from commit history. Landed 2026-06-15, five weeks ahead of the rest of this release. Root is one of the three locations GitHub reads for this file, so it survives the `.github/` removal below -- nothing in the commit suggests that was the reason for the placement. Not listed in `files`, so it does not ship in the npm tarball.
+
+### Changed
+
+- **`@types/node` bumped `^25.6.0` -> `^26.0.1` (major, devDependency)**; the resolved version moved 25.9.3 -> 26.0.1 and pulled `undici-types` `7.24.6` -> `8.3.0` with it (the `@types/node` range on that package widened from `>=7.24.0 <7.24.7` to `~8.3.0`). `engines.node` stays at `>=22`, leaving the type surface four majors above the supported floor -- a gap that predates this bump, since `^25.6.0` was already three above. Safe here because `src/` imports only long-stable builtins (`node:crypto`, `node:fs`, `node:path`, `node:url`, `node:os`, `node:test`, `node:assert/strict`) and nothing Node 26-only. Verified under the new types: `tsc --noEmit` clean, 64/64 tests pass across 7 suites.
+- **Runtime dependencies moved by lockfile only:** `@hono/node-server` 2.0.4 -> 2.0.5, `better-sqlite3` 12.10.0 -> 12.11.1, `hono` 4.12.25 -> 4.12.26. The declared ranges (`^2.0.4`, `^12.9.0`, `^4.6.0`) are untouched and `package-lock.json` is not published, so consumers see no floor change and resolve exactly what they resolved on 0.1.7.
+- **`@biomejs/biome` 2.5.0 -> 2.5.1**, also lockfile-only -- the existing `^2.4.13` range already covered it. Carries its eight `@biomejs/cli-*` platform packages along.
+
+### Removed
+
+- **`.github/dependabot.yml`, and with it the `.github/` directory entirely.** This stops live automated dependency PRs rather than cleaning up a dead file: the config was still opening them on its declared weekly-Monday npm schedule right up to the removal (#12 on 2026-06-15, #13 and #14 on 2026-06-22, #15 and #16 on 2026-06-29), and the three bumps merged in this release came from it. Note the commit subject -- "remove GitHub Actions workflows and dependabot config" -- overstates the diff on the Actions half: no workflow file was left to remove, 0.1.2 having deleted all of them when releases moved to a local-only `release.sh` flow, and 0.1.5 having dropped the orphaned `github-actions` updater. The npm updater was the only thing still under `.github/`. #16 is the last Dependabot PR merged into this repo to date.
+
 ## [0.1.7] -- 2026-06-13
 
 Maintenance only -- no runtime or API changes; internal config and doc cleanups.
