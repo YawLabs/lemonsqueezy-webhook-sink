@@ -1,7 +1,5 @@
 # @yawlabs/lemonsqueezy-webhook-sink
 
-[![Follow @TokenLimitNews on X](https://img.shields.io/badge/follow-%40TokenLimitNews-000000?logo=x&logoColor=white)](https://x.com/TokenLimitNews)
-
 Durable webhook receiver for [LemonSqueezy](https://lemonsqueezy.com). Verifies HMAC signatures, deduplicates repeat deliveries, and persists every event to SQLite so your downstream services can read from the sink on their own schedule and reconcile state even when their API calls succeed-but-the-response-is-lost.
 
 Designed to sit **in front of** your business logic — not to replace it.
@@ -99,3 +97,5 @@ npm test
 ## License
 
 MIT
+
+[![Follow @TokenLimitNews on X](https://img.shields.io/badge/follow-%40TokenLimitNews-000000?logo=x&logoColor=white)](https://x.com/TokenLimitNews)
