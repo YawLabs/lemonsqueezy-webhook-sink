@@ -7,6 +7,23 @@ All notable changes to `@yawlabs/lemonsqueezy-webhook-sink` are documented here.
 ### Changed
 
 - npm and MCP Registry listing metadata: homepage, bugs URL and keywords
+- `release.sh` writes a `## [x.y.z]` changelog entry for every release -- promoting `[Unreleased]` when it has content, otherwise generating one from the commit subjects since the previous tag -- keeps Keep-a-Changelog compare links current where a file uses them, and takes the GitHub release notes from that entry instead of from `git log` subjects. Before this, a release with nothing under `[Unreleased]` got no entry at all (0.2.0 below is backfilled), and every GitHub release page showed raw commit subjects.
+
+## [0.2.0] -- 2026-09-13
+
+Tooling and docs only -- `src/` is untouched across the range, so the published package (`files: ["dist/", "schema.sql"]`) carries no behavior change.
+
+### Added
+
+- **`scripts/lint.mjs`, which `npm run lint` and `lint:fix` now route through (#19).** Some `@biomejs/cli-win32-arm64` builds crash on any real check -- measured: 2.5.4 exits 139, while 2.4.16, 2.5.13 and the 2.5.1 this repo installs run correctly -- and nothing cheap tells a good build from a bad one, since the broken one still answers `--version`. On Windows ARM64 the script provisions the x64 build of the same version into `node_modules/.cache/` and runs it under emulation; on every other host it is a passthrough to the platform binary. The version comes from `package-lock.json` (what the repo installs), not from `biome.json`'s `$schema`, which only says what the config validates against. The exit code is Biome's own, so a non-zero result from `release.sh` step 1 is a real finding -- and with no CI in this repo, it is the only lint signal before `npm publish`. Escape hatches: `YAWLABS_BIOME_BIN=<path>` and `YAWLABS_BIOME_NATIVE=1`.
+- **README: a "Follow @TokenLimitNews on X" badge**, added to the top badge row (#18) and then moved to the bottom, under License, so the description leads on npm and GitHub (#21).
+
+### Changed
+
+- **`release.sh` promotes `[Unreleased]` to `## [<version>] -- <date>` before the bump commit and stages `CHANGELOG.md` in it.** The script never touched the heading before, so documented work accumulated under `[Unreleased]` while shipped versions went out with no entry of their own -- the cause of the backfilled entries in this file. The separator is detected from the existing headings rather than hardcoded, and `assert_changelog_promoted` fails the release when a version has no entry while `[Unreleased]` still has content.
+- **`release.sh`: the `SKIP_LINT` comment rewritten** to stop asserting things that are not true of this repo -- there is no CI to "catch lint regressions anyway", and the crash the hatch worked around is a per-build Biome defect, not the npm run-script wrapper (#19). The hatch itself is unchanged and remains a last resort.
+- **`biome.json` `$schema` 2.5.0 -> 2.5.1**, matching the Biome version `package-lock.json` installs, so editor validation and the linter agree (#20).
+- **CHANGELOG: the missing 0.1.8 entry backfilled**, reconstructed from the release range and checked against the shipped code rather than paraphrased from commit subjects.
 
 ## [0.1.9] -- 2026-08-23
 
