@@ -4,6 +4,8 @@ All notable changes to `@yawlabs/lemonsqueezy-webhook-sink` are documented here.
 
 ## [Unreleased]
 
+## [0.2.1] -- 2026-09-14
+
 ### Changed
 
 - npm and MCP Registry listing metadata: homepage, bugs URL and keywords
