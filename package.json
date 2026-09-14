@@ -8,12 +8,24 @@
     "type": "git",
     "url": "git+https://github.com/YawLabs/lemonsqueezy-webhook-sink.git"
   },
+  "homepage": "https://github.com/YawLabs/lemonsqueezy-webhook-sink#readme",
+  "bugs": {
+    "url": "https://github.com/YawLabs/lemonsqueezy-webhook-sink/issues"
+  },
   "keywords": [
     "lemonsqueezy",
     "webhook",
     "receiver",
     "reconciliation",
-    "payments"
+    "payments",
+    "lemon-squeezy",
+    "webhooks",
+    "webhook-receiver",
+    "hmac",
+    "idempotency",
+    "deduplication",
+    "event-store",
+    "sqlite"
   ],
   "type": "module",
   "main": "dist/index.js",
