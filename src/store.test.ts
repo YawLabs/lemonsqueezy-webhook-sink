@@ -96,4 +96,31 @@ describe("EventStore", () => {
     // Reopen so afterEach close() doesn't double-close
     store = new EventStore(dbPath);
   });
+
+  it("list combines since and type filters (the realistic admin query)", () => {
+    store.insert(base({ event_key: "a", event_name: "order_created", received_at: 100 }));
+    store.insert(base({ event_key: "b", event_name: "order_created", received_at: 200 }));
+    store.insert(base({ event_key: "c", event_name: "subscription_updated", received_at: 300 }));
+    store.insert(base({ event_key: "d", event_name: "order_created", received_at: 400 }));
+    const rows = store.list({ since: 150, type: "order_created" });
+    assert.deepEqual(
+      rows.map((r) => r.event_key),
+      ["b", "d"],
+    );
+  });
+
+  it("list excludes a row whose received_at equals since (exclusive lower bound)", () => {
+    store.insert(base({ event_key: "a", received_at: 100 }));
+    store.insert(base({ event_key: "b", received_at: 100 }));
+    const rows = store.list({ since: 100 });
+    assert.equal(rows.length, 0);
+  });
+
+  it("markProcessed on a non-existent id is a no-op", () => {
+    store.insert(base());
+    assert.equal(store.stats().unprocessed, 1);
+    store.markProcessed(999999);
+    assert.equal(store.stats().unprocessed, 1);
+    assert.equal(store.stats().total, 1);
+  });
 });

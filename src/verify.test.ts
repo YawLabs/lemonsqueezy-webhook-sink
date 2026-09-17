@@ -39,4 +39,14 @@ describe("verifySignature", () => {
   it("rejects signature of different length without timing leak", () => {
     assert.equal(verifySignature(body, "abc", secret), false);
   });
+
+  it("rejects an empty-string signature header (not just null)", () => {
+    assert.equal(verifySignature(body, "", secret), false);
+  });
+
+  it("rejects a non-hex signature of the correct length via timing-safe compare", () => {
+    const expected = sign(body, secret);
+    const received = "z".repeat(expected.length);
+    assert.equal(verifySignature(body, received, secret), false);
+  });
 });

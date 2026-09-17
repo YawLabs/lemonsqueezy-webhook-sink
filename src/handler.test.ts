@@ -118,4 +118,32 @@ describe("handleWebhook", () => {
     const rows = store.list({ limit: 1 });
     assert.equal(rows[0]?.payload, body);
   });
+
+  it("accepts a numeric data.id and stores it as a string resource_id", () => {
+    const body = JSON.stringify({
+      meta: { event_name: "order_created" },
+      data: { type: "orders", id: 42, attributes: { created_at: "2026-01-01T00:00:00Z" } },
+    });
+    const result = handleWebhook({ store, signingSecret: secret }, { rawBody: body, signature: sign(body, secret) });
+    assert.equal(result.status, 200);
+    assert.equal(store.list({})[0]?.resource_id, "42");
+  });
+
+  it("stores resource_id as null when data.id is absent", () => {
+    const body = JSON.stringify({
+      meta: { event_name: "order_created" },
+      data: { type: "orders", attributes: { created_at: "2026-01-01T00:00:00Z" } },
+    });
+    const result = handleWebhook({ store, signingSecret: secret }, { rawBody: body, signature: sign(body, secret) });
+    assert.equal(result.status, 200);
+    assert.equal(store.list({})[0]?.resource_id, null);
+  });
+
+  it("rejects an empty body with 400 invalid json (after sig passes)", () => {
+    const rawBody = "";
+    const signature = createHmac("sha256", secret).update("").digest("hex");
+    const result = handleWebhook({ store, signingSecret: secret }, { rawBody, signature });
+    assert.equal(result.status, 400);
+    assert.match((result.body as { error: string }).error, /invalid json/);
+  });
 });
