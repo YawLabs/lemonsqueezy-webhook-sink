@@ -4,6 +4,11 @@ All notable changes to `@yawlabs/lemonsqueezy-webhook-sink` are documented here.
 
 ## [Unreleased]
 
+## [0.2.3] -- 2026-09-16
+
+### Changed
+- test: cover the gaps surfaced by /yaw-coverage
+
 ## [0.2.2] -- 2026-09-15
 
 ### Security
