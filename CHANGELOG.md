@@ -4,6 +4,10 @@ All notable changes to `@yawlabs/lemonsqueezy-webhook-sink` are documented here.
 
 ## [Unreleased]
 
+### Security
+
+- **`@hono/node-server` moves from `^2.0.10` to `^2.1.3` and `hono` from `^4.13.5` to `^4.13.11`, the first versions patched for GHSA-rmxm-3fg6-px4f and GHSA-5r4p-p66f-jhc7; `npm audit` is clean again.** The lockfile resolves `@hono/node-server` 2.1.7 and `hono` 4.13.18. Both advisories are the same flaw: `serveStatic` decoded the request path a second time, letting a crafted static path bypass middleware. This server never loads `serveStatic`, so it was not exposed, but both are runtime dependencies and the raised floors keep consumers from resolving an advised version.
+
 ## [0.2.3] -- 2026-09-16
 
 ### Changed
